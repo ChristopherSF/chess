@@ -1,0 +1,46 @@
+:root {
+  font-family: "Poppins", Arial, sans-serif, system-ui;
+
+  --background: #1e1e1e;
+  --second-background: #2e2e2e;
+  --text-color: #ffffffde;
+  --hover-background: #621c1c;
+  --hover-background-social: #1c2262;
+  --hover-text: #ffffffde;
+  --line-separator: #ffffffde;
+
+  color-scheme: dark light;
+  background-color: var(--background);
+  color: var(--text-color);
+  
+  width: 100%;
+
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #ffffff44;
+    border-radius: 6px;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+
+  width: 100%;
+  min-height: 90dvh;
+}
+
+.page {
+
+  width: 100%;
+  min-height: 100dvh;
+  transition: height 1s ease;
+
+}

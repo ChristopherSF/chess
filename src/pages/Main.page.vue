@@ -1,9 +1,9 @@
 <script setup>
-import Main from './pages/Main.page.vue'
+    import Board from '../components/Board.component.vue'
 </script>
 
 <template>
-  <Main />
+    <Board />
 </template>
 
 <style scoped>
