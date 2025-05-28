@@ -6,8 +6,6 @@
   --text-color: #ffffffde;
   --hover-background: #621c1c;
   --hover-background-social: #1c2262;
-  --hover-text: #ffffffde;
-  --line-separator: #ffffffde;
 
   color-scheme: dark light;
   background-color: var(--background);
@@ -34,13 +32,9 @@ body {
   padding: 0;
 
   width: 100%;
-  min-height: 90dvh;
 }
 
-.page {
-
+#app {
   width: 100%;
-  min-height: 100dvh;
-  transition: height 1s ease;
-
+  min-height: 95svh;
 }

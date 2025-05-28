@@ -1,5 +1,5 @@
 <script setup>
-import Main from './pages/Main.page.vue'
+  import Main from './pages/Main.page.vue'
 </script>
 
 <template>
@@ -7,4 +7,5 @@ import Main from './pages/Main.page.vue'
 </template>
 
 <style scoped>
+  
 </style>
