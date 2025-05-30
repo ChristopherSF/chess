@@ -170,9 +170,12 @@
 
     watch(board, (newVal, oldVal) => {
         if(updating) return
+
         updating = true
         onBoardChange(getFEN())
-        updating = false
+        setTimeout(() => {
+            updating = false
+        }, 2000)
     }, { deep: true })
 
     watch(currentFEN, (newVal, oldVal) => {
@@ -199,7 +202,7 @@
         board.value = new_board
         setTimeout(() => {
             updating = false
-        }, 3000)
+        }, 2000)
     })
 
     //-----------------------------INIT
