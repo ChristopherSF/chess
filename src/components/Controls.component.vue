@@ -88,10 +88,10 @@
     //------------------------------------FORM INFO
 
     const currentColorMoves = ref('w')
-    const currentCastleWhiteKing = ref(false)
-    const currentCastleWhiteQueen = ref(false)
-    const currentCastleBlackKing = ref(false)
-    const currentCastleBlackQueen = ref(false)
+    const currentCastleWhiteKing = ref(true)
+    const currentCastleWhiteQueen = ref(true)
+    const currentCastleBlackKing = ref(true)
+    const currentCastleBlackQueen = ref(true)
     const currentPassant = ref('-')
     const currentFEN = ref(FEN)
 
