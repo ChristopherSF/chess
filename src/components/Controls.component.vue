@@ -53,7 +53,7 @@
     }));
 
     const empty_board = '8/8/8/8/8/8/8/8'
-    const initial_board = 'RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr'
+    const initial_board = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
     const dictionary = {
         p: 'pawn',
         n: 'knight',

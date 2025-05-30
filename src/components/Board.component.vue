@@ -10,7 +10,8 @@
         moveCopyPiece, 
         setMoveCopyPiece,
         isErasing,
-        handleErase
+        handleErase,
+        stockfishResponse,
         } = 
     defineProps({ 
         onBoardChange: Function, 
@@ -19,7 +20,8 @@
         moveCopyPiece: String,
         setMoveCopyPiece: Function,
         isErasing: Boolean,
-        handleErase: Function
+        handleErase: Function,
+        stockfishResponse: Object
     })
 
     //-----------------------------CONSTS
@@ -64,11 +66,19 @@
 
     let dragFrom = null
     let moveFrom = null
+    let updating = false
 
     //---------------------------FUNCTIONS
 
     const isEven = (number) => {
         return number % 2 == 0
+    }
+
+    const isBest = (row, col) => {
+        if(currentFlip) {
+            
+        }
+        return (row == bestMoveFromRow.value && col == bestMoveFromColumn.value) || (row == bestMoveToRow.value && col == bestMoveToColumn.value) 
     }
 
     const isSquareClicked = (row, col) => {
@@ -157,7 +167,10 @@
     //----------------------------REFS
 
     const board = ref(initial_board)
-    let updating = false
+    const bestMoveFromRow = ref('')
+    const bestMoveFromColumn = ref('')
+    const bestMoveToRow = ref('')
+    const bestMoveToColumn = ref('')
 
     //----------------------------COMPUTED
 
@@ -165,6 +178,7 @@
     const currentFlip = computed(() => flip)
     const currentMoveCopyPiece = computed(() => moveCopyPiece)
     const currentIsErasing = computed(() => isErasing)
+    const currentStockfishResponse = computed(() => stockfishResponse)
 
     //----------------------------WATCH
 
@@ -175,7 +189,7 @@
         onBoardChange(getFEN())
         setTimeout(() => {
             updating = false
-        }, 2000)
+        }, 500)
     }, { deep: true })
 
     watch(currentFEN, (newVal, oldVal) => {
@@ -202,9 +216,20 @@
         board.value = new_board
         setTimeout(() => {
             updating = false
-        }, 2000)
+        }, 500)
     })
 
+    watch(currentStockfishResponse, (newVal, oldVal) => {
+        if(newVal.success) {
+            if(newVal.bestmove) {
+                const bestmove = newVal.bestmove.split(' ')[1].split('')
+                bestMoveFromRow.value = Math.abs(parseInt(bestmove[1]) - 8)
+                bestMoveFromColumn.value = bestmove[0].toUpperCase()
+                bestMoveToRow.value = Math.abs(parseInt(bestmove[3]) - 8)
+                bestMoveToColumn.value = bestmove[2].toUpperCase()
+            }
+        }
+    })
     //-----------------------------INIT
 
     onBoardChange(getFEN())
@@ -221,7 +246,9 @@
             <div
                 v-for="(letter, letter_index) in letters_indexed"
                 :key="letter.id" class="board__container_row_square"
-                :class="[isEven(letter_index + number_index + 2) ? 'light' : 'dark' , isSquareClicked(number_index, letter.value) ? 'selected' : '']"
+                :class="[isEven(letter_index + number_index + 2) ? 'light' : 'dark' 
+                    ,isSquareClicked(number_index, letter.value) ? 'selected' : ''
+                    ,isBest(number_index, letter.value) ? 'best' : '']"
                 @dragover.prevent
                 @drop="(e) => onDrop(number_index, letter.value, e)"
                 @click="(e) => moveByClick(number_index, letter.value, e)"
@@ -293,6 +320,10 @@
 
     .selected {
         background-color: #d9ff00b0;
+    }
+
+    .best {
+        background-color: #00ddffb0;
     }
 
 </style>
