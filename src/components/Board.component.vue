@@ -222,7 +222,7 @@
             >
                 <img 
                     v-if="board[number_index][letter.value] != ''"
-                    :src="`/chess-pieces/${dictionary[board[number_index][letter.value]]}.png`"
+                    :src="`chess-pieces/${dictionary[board[number_index][letter.value]]}.png`"
                     class="board__container_row_square-piece-image"
                     :class="[currentFlip ? 'rotate' : '']"
                     draggable="true"

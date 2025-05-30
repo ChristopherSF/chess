@@ -77,7 +77,7 @@
             return response.json();
         })
         .then(data => {
-            console.log('Fetched data:', data);
+            //console.log('Fetched data:', data);
             stockfishResponse.value = data
         })
         .catch(error => {

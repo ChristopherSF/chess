@@ -201,7 +201,7 @@
             <div class="aside__container_pieces_container">
                 <img 
                     v-for="p in pieces_indexed"
-                    :key="p.id" :src="`/chess-pieces/${dictionary[p.value]}${colorPieces ? '_w' : '_b'}.png`"
+                    :key="p.id" :src="`chess-pieces/${dictionary[p.value]}${colorPieces ? '_w' : '_b'}.png`"
                     class="aside__container_pieces_container-item"
                     :class="[convertColorPiece(p.value) == currentMoveCopyPiece ? 'selected' : '']"
                     @dragstart="(e) => handleDragStartOnCopyImage(p.value, e)"
