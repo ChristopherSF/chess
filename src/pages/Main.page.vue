@@ -68,7 +68,6 @@
         const castles = `${castleWhiteKing.value}${castleWhiteQueen.value}${castleBlackKing.value}${castleBlackQueen.value}`
         const c_castles = castles ? castles : '-'
         const c_fen = `${FEN.value} ${colorMoves.value} ${c_castles} ${passant.value} 0 1`
-        console.log(c_fen)
         fetch(`https://stockfish.online/api/s/v2.php?fen=${c_fen}&depth=12`)
         .then(response => {
             if (!response.ok) {

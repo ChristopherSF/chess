@@ -196,7 +196,10 @@
             position = -1
             new_board.push(board_row)
         })
-        updating = false
+        board.value = new_board
+        setTimeout(() => {
+            updating = false
+        }, 3000)
     })
 
     //-----------------------------INIT
