@@ -3,7 +3,24 @@
     import { v4 as uuidv4 } from 'uuid'
 
 
-    const { onBoardChange, FEN } = defineProps({ onBoardChange: Function, FEN: String })
+    const { 
+        onBoardChange, 
+        FEN, 
+        flip, 
+        moveCopyPiece, 
+        setMoveCopyPiece,
+        isErasing,
+        handleErase
+        } = 
+    defineProps({ 
+        onBoardChange: Function, 
+        FEN: String,
+        flip: Boolean,
+        moveCopyPiece: String,
+        setMoveCopyPiece: Function,
+        isErasing: Boolean,
+        handleErase: Function
+    })
 
     //-----------------------------CONSTS
 
@@ -25,14 +42,14 @@
     }
 
     const initial_board = [
-        {A: 'R', B: 'N', C: 'B', D: 'Q', E: 'K', F: 'B', G: 'N',H: 'R'},
-        {A: 'P', B: 'P', C: 'P', D: 'P', E: 'P', F: 'P', G: 'P',H: 'P'},
-        {A: '',  B: '',  C: '',  D: '',  E: '',  F: '',  G: '', H: '' },
-        {A: '',  B: '',  C: '',  D: '',  E: '',  F: '',  G: '', H: '' },
-        {A: '',  B: '',  C: '',  D: '',  E: '',  F: '',  G: '', H: '' },
-        {A: '',  B: '',  C: '',  D: '',  E: '',  F: '',  G: '', H: '' },
+        {A: 'r', B: 'n', C: 'b', D: 'q', E: 'k', F: 'b', G: 'n',H: 'r'},
         {A: 'p', B: 'p', C: 'p', D: 'p', E: 'p', F: 'p', G: 'p',H: 'p'},
-        {A: 'r', B: 'n', C: 'b', D: 'q', E: 'k', F: 'b', G: 'n',H: 'r'}
+        {A: '',  B: '',  C: '',  D: '',  E: '',  F: '',  G: '', H: '' },
+        {A: '',  B: '',  C: '',  D: '',  E: '',  F: '',  G: '', H: '' },
+        {A: '',  B: '',  C: '',  D: '',  E: '',  F: '',  G: '', H: '' },
+        {A: '',  B: '',  C: '',  D: '',  E: '',  F: '',  G: '', H: '' },
+        {A: 'P', B: 'P', C: 'P', D: 'P', E: 'P', F: 'P', G: 'P',H: 'P'},
+        {A: 'R', B: 'N', C: 'B', D: 'Q', E: 'K', F: 'B', G: 'N',H: 'R'}
     ]
 
     const letters_indexed = letters.map(letter => ({
@@ -54,10 +71,28 @@
         return number % 2 == 0
     }
 
+    const isSquareClicked = (row, col) => {
+
+        return (
+            (moveFrom &&
+            moveFrom.row &&
+            moveFrom.col &&
+            moveFrom.row === row &&
+            moveFrom.col === col) ||
+            (dragFrom &&
+            dragFrom.row &&
+            dragFrom.col &&
+            dragFrom.row === row &&
+            dragFrom.col === col)
+        );
+    }
+
     const onDragStart = (row, col, event) => {
 
         dragFrom = { row, col }
         event.target.style.opacity = 0
+
+        setMoveCopyPiece(board.value[row][col])
 
         event.dataTransfer.effectAllowed = "move"
         event.dataTransfer.dropEffect = "move"
@@ -65,12 +100,12 @@
     }
 
     const onDrop = (toRow, toCol, event) => {
-        if (!dragFrom) return
+        if (!dragFrom && !currentMoveCopyPiece.value) return
 
-        const piece = board.value[dragFrom.row][dragFrom.col]
-        board.value[dragFrom.row][dragFrom.col] = ''
-        board.value[toRow][toCol] = piece
+        if(dragFrom) board.value[dragFrom.row][dragFrom.col] = ''
+        if(currentMoveCopyPiece.value) board.value[toRow][toCol] = currentMoveCopyPiece.value
 
+        setMoveCopyPiece(null)
         dragFrom = null
     }
 
@@ -78,29 +113,20 @@
         event.target.style.opacity = 1
     }
 
-    /*const onTouchStart = (row, col, event) => {
-        dragFrom = { row, col }
-        event.target.style.opacity = 0
-    }
-
-    const onTouchEnd = (toRow, toCol, event) => {
-        if (!dragFrom) return
-
-        const piece = board.value[dragFrom.row][dragFrom.col]
-        board.value[dragFrom.row][dragFrom.col] = ''
-        board.value[toRow][toCol] = piece
-
-        event.target.style.opacity = 1
-    }*/
-
     const moveByClick = (row, col, event) => {
         if(moveFrom) {
-            const piece = board.value[moveFrom.row][moveFrom.col]
             board.value[moveFrom.row][moveFrom.col] = ''
-            board.value[row][col] = piece
+            board.value[row][col] = currentMoveCopyPiece.value
+            
+            setMoveCopyPiece(null)
             moveFrom = null
         }
+        else if (currentMoveCopyPiece.value || currentIsErasing.value) {
+            board.value[row][col] = currentIsErasing.value ? '' : currentMoveCopyPiece.value
+            setMoveCopyPiece(null)
+        }
         else {
+            setMoveCopyPiece(board.value[row][col])
             moveFrom = { row, col }
         }
     }
@@ -123,7 +149,7 @@
                 temp_fen += temp_counter
                 temp_counter = 0
             }
-            if(index != 7)   temp_fen += '/'
+            if(index != 7) temp_fen += '/'
         })
         return temp_fen
     }
@@ -131,38 +157,65 @@
     //----------------------------REFS
 
     const board = ref(initial_board)
-    const touchedPiece = ref(null)
-    const dragging = ref(false)
-    const position = ref({ x: 0, y: 0 })
+    let updating = false
 
     //----------------------------COMPUTED
 
     const currentFEN = computed(() => FEN)
+    const currentFlip = computed(() => flip)
+    const currentMoveCopyPiece = computed(() => moveCopyPiece)
+    const currentIsErasing = computed(() => isErasing)
 
     //----------------------------WATCH
 
     watch(board, (newVal, oldVal) => {
+        if(updating) return
+        updating = true
         onBoardChange(getFEN())
+        updating = false
     }, { deep: true })
 
     watch(currentFEN, (newVal, oldVal) => {
-        console.log(newVal)
+        if(updating) return
+
+        updating = true
+        var position = -1
+        const new_board = []
+        newVal.split('/').forEach((row, row_index) => {
+            const board_row = {}
+            row.split('').forEach(square => {
+                position++
+                if(isNaN(square)) board_row[letters[position]] = square
+                else {
+                    for(var i = position; i < position + square; i++) {
+                        board_row[letters[i]] = ''
+                    }
+                    position += square - 1
+                }
+            })
+            position = -1
+            new_board.push(board_row)
+        })
+        updating = false
     })
 
-    //----------------------------
+    //-----------------------------INIT
+
+    onBoardChange(getFEN())
 
 </script>
 
 <template>
     <div 
         class="board__container"
+        :class="[currentFlip ? 'rotate' : '']"
         @contextmenu.prevent
     >
         <div v-for="(number, number_index) in numbers_indexed" :key="number.id" class="board__container_row">
             <div
                 v-for="(letter, letter_index) in letters_indexed"
                 :key="letter.id" class="board__container_row_square"
-                :class="[isEven(letter_index + number_index + 2) ? 'light' : 'dark']"
+                :class="[isEven(letter_index + number_index + 2) ? 'light' : 'dark' , isSquareClicked(number_index, letter.value) ? 'selected' : '']"
                 @dragover.prevent
                 @drop="(e) => onDrop(number_index, letter.value, e)"
                 @click="(e) => moveByClick(number_index, letter.value, e)"
@@ -171,6 +224,7 @@
                     v-if="board[number_index][letter.value] != ''"
                     :src="`/chess-pieces/${dictionary[board[number_index][letter.value]]}.png`"
                     class="board__container_row_square-piece-image"
+                    :class="[currentFlip ? 'rotate' : '']"
                     draggable="true"
                     @dragstart="(e) => onDragStart(number_index, letter.value, e)"
                     @dragend="(e) => onDragEnd(e)"
@@ -196,6 +250,8 @@
             .board__container_row_square {
                 min-width: 30px;
                 min-height: 30px;
+                width: min(99svh / 8, 100svw / 8);
+                height: min(99svh / 8, 100svw / 8);
                 flex: 1;
                 aspect-ratio: 1/1;
 
@@ -203,6 +259,7 @@
 
                     height: 100%;
                     width: 100%;
+                    object-fit: contain;
 
                     &:hover {
                         cursor: grab;
@@ -226,6 +283,10 @@
 
     .rotate {
         transform: rotate(180deg);
+    }
+
+    .selected {
+        background-color: #d9ff00b0;
     }
 
 </style>

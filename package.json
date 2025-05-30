@@ -2,9 +2,12 @@
   "name": "chess",
   "private": true,
   "version": "0.0.0",
+  "homepage": "https://christophersf.github.io/stockfishweb",
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -14,6 +17,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.3",
+    "gh-pages": "^6.3.0",
     "sass": "^1.89.0",
     "sass-loader": "^16.0.5",
     "vite": "^6.3.5"
